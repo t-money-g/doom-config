@@ -6,8 +6,8 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
-(setq user-full-name "John Doe"
-      user-mail-address "john@doe.com")
+(setq user-full-name "T Money"
+      user-mail-address "tyoungjr2005@gmail.com")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -60,3 +60,33 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+;;
+;;
+;;damon chan's setup for opening url with default browser
+(defun wsl-browse-url-xdg-open (url &optional ignored)
+  (interactive (browse-url-interactive-arg "URL: "))
+  (shell-command-to-string (concat "explorer.exe " url)))
+(advice-add #'browse-url-xdg-open :override #'wsl-browse-url-xdg-open)
+
+(defmacro wsl--open-with (id &optional app dir)
+  `(defun ,(intern (format "wsl/%s" id)) ()
+     (interactive)
+     (wsl-open-with ,app ,dir)))
+
+(defun wsl-open-with (&optional app-name path)
+  "Send PATH to APP-NAME on WSL."
+  (interactive)
+  (let* ((path (expand-file-name
+                (replace-regexp-in-string
+                 "'" "\\'"
+                 (or path (if (derived-mode-p 'dired-mode)
+                              (dired-get-file-for-visit)
+                            (buffer-file-name)))
+                 nil t)))
+         (command (format "%s `wslpath -w %s`" (shell-quote-argument app-name) path)))
+    (shell-command-to-string command)))
+
+(wsl--open-with open-in-default-program "explorer.exe" buffer-file-name)
+(wsl--open-with reveal-in-explorer "explorer.exe" default-directory)
+
+;;(setq select-enable-clipboard nil)
