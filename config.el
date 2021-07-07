@@ -34,7 +34,8 @@
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
-
+;; some customization
+(setq projectile-project-search-path '("~/src/"))
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structrual editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook                  #'enable-paredit-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
@@ -42,7 +43,6 @@
 (add-hook 'lisp-mode-hook                        #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook                      #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook            #'enable-paredit-mode)
-
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -89,4 +89,18 @@
 (wsl--open-with open-in-default-program "explorer.exe" buffer-file-name)
 (wsl--open-with reveal-in-explorer "explorer.exe" default-directory)
 
-;;(setq select-enable-clipboard nil)
+(which-key-mode)
+(add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      treemacs-space-between-root-nodes nil
+      company-idle-delay 0.0
+      company-minimum-prefix-length 1
+      lsp-idle-delay 0.1)  ;; clangd is fast
+
+(with-eval-after-load 'lsp-mode
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+  (require 'dap-cpptools)
+  (yas-global-mode))
