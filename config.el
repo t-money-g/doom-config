@@ -29,7 +29,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+(setq org-directory "~/Notes/")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -104,3 +104,28 @@
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (require 'dap-cpptools)
   (yas-global-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (after! org                     ;;
+;;   (map! :map org-mode-map       ;;
+;;         :n "M-j" #'org-metadown ;;
+;;         :n "M-k' #'org-metaup)) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package! org-super-agenda
+  :after org-agenda
+  :init
+ (setq org-super-agenda-groups '((:name "Today"
+                                  :time-grid t
+                                  :scheduled today)
+                           (:name "Due today"
+                                  :deadline today)
+                           (:name "Important"
+                                  :priority "A")
+                           (:name "Overdue"
+                                  :deadline past)
+                           (:name "Due soon"
+                                  :deadline future)
+                           (:name "Big Outcomes"
+                            :tag "bo")))
+ :config
+ (org-super-agenda-mode))
